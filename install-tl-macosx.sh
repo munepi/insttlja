@@ -153,7 +153,7 @@ if [ ${DARWIN_ENABLE_TLPTEXLIVE} -eq 1 ]; then
     cat<<EOF>${DARWIN_TEXMFLOCAL}/tlpkg/pinning.txt
 tlmgr pinning add tlptexlive '*'
 EOF
-    tlmgr repository add http://www.tug.org/~preining/tlptexlive/ tlptexlive
+    tlmgr repository add http://www.tug.org/~preining/tlptexlive/2013/ tlptexlive
 fi
 
 # patching texmf.cnf
