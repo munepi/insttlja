@@ -147,8 +147,8 @@ $__install_tl -profile ${DARWIN_TEXDIR}/tlpkg/texlive.profile
 
 # for tlptexlive repository
 if [ ${DARWIN_ENABLE_TLPTEXLIVE} -eq 1 ]; then
-    tlmgr --repository ${DARWIN_TLPTEXLIVEROOT} install pmetapost hiraprop
-    tlmgr --repository ${DARWIN_TLPTEXLIVEROOT} update --all
+    tlmgr --repository ${DARWIN_TLPTEXLIVEREPO} install pmetapost hiraprop
+    tlmgr --repository ${DARWIN_TLPTEXLIVEREPO} update --all
     mkdir -p ${DARWIN_TEXMFLOCAL}/tlpkg
     cat<<EOF>${DARWIN_TEXMFLOCAL}/tlpkg/pinning.txt
 tlmgr pinning add tlptexlive '*'

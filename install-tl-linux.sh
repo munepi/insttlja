@@ -131,8 +131,8 @@ $__install_tl -profile ${LINUX_TEXDIR}/tlpkg/texlive.profile
 
 # for tlptexlive repository
 if [ ${LINUX_ENABLE_TLPTEXLIVE} -eq 1 ]; then
-    tlmgr --repository ${LINUX_TLPTEXLIVEROOT} install pmetapost hiraprop
-    tlmgr --repository ${LINUX_TLPTEXLIVEROOT} update --all
+    tlmgr --repository ${LINUX_TLPTEXLIVEREPO} install pmetapost hiraprop
+    tlmgr --repository ${LINUX_TLPTEXLIVEREPO} update --all
     mkdir -p ${LINUX_TEXMFLOCAL}/tlpkg
     cat<<EOF>${LINUX_TEXMFLOCAL}/tlpkg/pinning.txt
 tlmgr pinning add tlptexlive '*'
