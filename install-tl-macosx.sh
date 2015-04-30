@@ -195,13 +195,13 @@ mkdir -p ${DARWIN_TEXMFLOCAL}/fonts/opentype/screen/hiragino
 mkdir -p ${DARWIN_TEXMFLOCAL}/fonts/opentype/jiyukobo/yu
 (cd ${DARWIN_TEXMFLOCAL}/fonts/opentype/jiyukobo/yu
     [ -f "/Library/Fonts/Yu Mincho Medium.otf" ] && \
-        ln -s "/Library/Fonts/Yu Mincho Medium.otf" YuMincho-Medium.otf
+        ln -s "/Library/Fonts/Yu Mincho Medium.otf" YuMin-Medium.otf
     [ -f "/Library/Fonts/Yu Mincho Demibold.otf" ] && \
-        ln -s "/Library/Fonts/Yu Mincho Demibold.otf" YuMincho-Demibold.otf
+        ln -s "/Library/Fonts/Yu Mincho Demibold.otf" YuMin-Demibold.otf
     [ -f "/Library/Fonts/Yu Gothic Medium.otf" ] && \
-        ln -s "/Library/Fonts/Yu Gothic Medium.otf" YuGothic-Medium.otf
+        ln -s "/Library/Fonts/Yu Gothic Medium.otf" YuGo-Medium.otf
     [ -f "/Library/Fonts/Yu Gothic Bold.otf" ] && \
-        ln -s "/Library/Fonts/Yu Gothic Bold.otf" YuGothic-Bold.otf
+        ln -s "/Library/Fonts/Yu Gothic Bold.otf" YuGo-Bold.otf
 )
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/mktexlsr ${DARWIN_TEXMFLOCAL}
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/kanji-config-updmap-sys ${DARWIN_kanjiEmbed}
