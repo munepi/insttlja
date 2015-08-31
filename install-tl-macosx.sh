@@ -151,9 +151,9 @@ if [ ${DARWIN_ENABLE_TLPTEXLIVE} -eq 1 ]; then
     tlmgr --repository ${DARWIN_TLPTEXLIVEREPO} update --all
     mkdir -p ${DARWIN_TEXMFLOCAL}/tlpkg
     cat<<EOF>${DARWIN_TEXMFLOCAL}/tlpkg/pinning.txt
-tlmgr pinning add tlptexlive '*'
+tlptexlive:*
 EOF
-    tlmgr repository add http://www.tug.org/~preining/tlptexlive/2013/ tlptexlive
+    tlmgr repository add http://www.tug.org/~preining/tlptexlive/ tlptexlive
 fi
 
 # patching texmf.cnf
