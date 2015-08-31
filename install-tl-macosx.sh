@@ -59,7 +59,7 @@ case ${DARWIN_OSXVERSION} in
     10.6|10.6.*)
         DARWIN_TLARCH=universal-darwin
         ;;
-    10.[789]|10.[789].*)
+    10.[789]|10.[789].*|10.1[01]|10.1[01].*)
         DARWIN_TLARCH=x86_64-darwin
         ;;
     *)
