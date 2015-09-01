@@ -59,7 +59,7 @@ case ${DARWIN_OSXVERSION} in
     10.6|10.6.*)
         DARWIN_TLARCH=universal-darwin
         ;;
-    10.[789]|10.[789].*)
+    10.[789]|10.[789].*|10.1[01]|10.1[01].*)
         DARWIN_TLARCH=x86_64-darwin
         ;;
     *)
@@ -151,7 +151,7 @@ if [ ${DARWIN_ENABLE_TLPTEXLIVE} -eq 1 ]; then
     tlmgr --repository ${DARWIN_TLPTEXLIVEREPO} update --all
     mkdir -p ${DARWIN_TEXMFLOCAL}/tlpkg
     cat<<EOF>${DARWIN_TEXMFLOCAL}/tlpkg/pinning.txt
-tlmgr pinning add tlptexlive '*'
+tlptexlive:*
 EOF
     tlmgr repository add http://www.tug.org/~preining/tlptexlive/ tlptexlive
 fi
