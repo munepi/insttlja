@@ -141,12 +141,7 @@ EOF
 fi
 
 # patching texmf.cnf
-echo "shell_escape_commands = \\
-bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,\\
-kpsewhich,\\
-makeindex,mendex,texindy,\\
-mpost,pmpost,upmpost,\\
-repstopdf,epspdf,extractbb" >> ${LINUX_TEXDIR}/texmf.cnf
+echo "shell_escape_commands = bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,kpsewhich,makeindex,mendex,upmendex,texindy,repstopdf,epspdf,extractbb" >> ${LINUX_TEXDIR}/texmf.cnf
 
 # setup Japanese pLaTeX2e typesetting environment
 ${LINUX_TEXDIR}/bin/${LINUX_TLARCH}/kanji-config-updmap-sys ${LINUX_kanjiEmbed}

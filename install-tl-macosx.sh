@@ -156,13 +156,11 @@ EOF
     tlmgr repository add http://www.tug.org/~preining/tlptexlive/ tlptexlive
 fi
 
+# set default font folders in Mac OS X
+echo "OSFONTDIR = /System/Library/Fonts//;/Library/Fonts//;~/Library/Fonts//" >> ${DARWIN_TEXDIR}/texmf.cnf
+
 # patching texmf.cnf
-echo "shell_escape_commands = \\
-bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,\\
-kpsewhich,\\
-makeindex,mendex,texindy,\\
-mpost,pmpost,upmpost,\\
-repstopdf,epspdf,extractbb" >> ${DARWIN_TEXDIR}/texmf.cnf
+echo "shell_escape_commands = bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,kpsewhich,makeindex,mendex,upmendex,texindy,repstopdf,epspdf,extractbb" >> ${DARWIN_TEXDIR}/texmf.cnf
 
 # setup Japanese pLaTeX2e typesetting environment
 mkdir -p ${DARWIN_TEXMFLOCAL}/fonts/opentype/screen/hiragino
