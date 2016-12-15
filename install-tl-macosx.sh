@@ -163,9 +163,14 @@ echo "shell_escape_commands = bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,kpse
 
 # setup Japanese pLaTeX2e typesetting environment
 CJKGSINTG_OPTS="--link-texmf --force"
-[ ! -z ${DARWIN_GSRESOURCEDIR} ] && \
-    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} -o ${DARWIN_GSRESOURCEDIR}"
+CJKGSINTG_TEMPDIR=$(mktemp -d)
+if [ -z ${DARWIN_GSRESOURCEDIR} ]; then
+    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} --output ${CJKGSINTG_TEMPDIR}"
+else
+    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} --output ${DARWIN_GSRESOURCEDIR}"
+fi
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/cjk-gs-integrate ${CJKGSINTG_OPTS}
+rm -rf ${CJKGSINTG_TEMPDIR}
 
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/mktexlsr ${DARWIN_TEXMFLOCAL}
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/kanji-config-updmap-sys ${DARWIN_kanjiEmbed}
