@@ -13,6 +13,9 @@ LINUX_PROFILE=${PROFILE:-default}
 . ${LINUX_PROFILE_D}/${LINUX_PROFILE}.conf || exit 1
 
 
+# given the Resource directory of Ghostscript if any
+LINUX_GSRESOURCEDIR=${GSRESOURCEDIR:-}
+
 # check the existence of install-tl
 if [ ! -f ${LINUX_INSTALL_TL} ]; then
     echo E: No such install-tl: ${LINUX_INSTALL_TL}
@@ -26,15 +29,15 @@ if [ -d ${LINUX_TEXDIR}/tlpkg -o -d ${LINUX_TEXDIR} ]; then
     exit 1
 fi
 
-# check LINUX_ENABLE_TLPTEXLIVE and LINUX_ENABLE_TLBIBUN
-case "${LINUX_ENABLE_TLPTEXLIVE},${LINUX_ENABLE_TLBIBUN}" in
+# check LINUX_ENABLE_TLTEXJP and LINUX_ENABLE_TLBIBUN
+case "${LINUX_ENABLE_TLTEXJP},${LINUX_ENABLE_TLBIBUN}" in
     1,0|0,1|0,0) ;;
     1,1)
-        echo E: not supported: "${LINUX_ENABLE_TLPTEXLIVE},${LINUX_ENABLE_TLBIBUN}"
+        echo E: not supported: "${LINUX_ENABLE_TLTEXJP},${LINUX_ENABLE_TLBIBUN}"
         exit 1
         ;;
     *)
-        echo E: unknown strings: "${LINUX_ENABLE_TLPTEXLIVE},${LINUX_ENABLE_TLBIBUN}"
+        echo E: unknown strings: "${LINUX_ENABLE_TLTEXJP},${LINUX_ENABLE_TLBIBUN}"
         exit 1
         ;;
 esac
@@ -64,8 +67,8 @@ cat<<EOF
 base profile:			${LINUX_PROFILE_D}/${LINUX_PROFILE}.conf
 LINUX_TLVERSION:		${LINUX_TLVERSION}
 LINUX_TLREPO:			${LINUX_TLREPO}
-LINUX_TLPTEXLIVEREPO:		${LINUX_TLPTEXLIVEREPO}
-LINUX_ENABLE_TLPTEXLIVE:	${LINUX_ENABLE_TLPTEXLIVE}
+LINUX_TLTEXJP:		${LINUX_TLTEXJP}
+LINUX_ENABLE_TLTEXJP:	${LINUX_ENABLE_TLTEXJP}
 LINUX_ENABLE_TLBIBUN:		${LINUX_ENABLE_TLBIBUN}
 LINUX_kanjiEmbed:		${LINUX_kanjiEmbed}
 LINUX_INSTALL_TL:		${LINUX_INSTALL_TL}
@@ -125,25 +128,30 @@ $__install_tl -profile ${LINUX_TEXDIR}/tlpkg/texlive.profile
 
 # collection-langcjk: depend hiraprop
 # # for LaTeX2e Bibunsho 6th Edition
-# if [ ${DARWIN_ENABLE_TLBIBUN} -eq 1 ]; then
-#     tlmgr --repository ${DARWIN_TLREPO} install hiraprop
+# if [ ${LINUX_ENABLE_TLBIBUN} -eq 1 ]; then
+#     tlmgr --repository ${LINUX_TLREPO} install hiraprop
 # fi
 
-# for tlptexlive repository
-if [ ${LINUX_ENABLE_TLPTEXLIVE} -eq 1 ]; then
-    tlmgr --repository ${LINUX_TLPTEXLIVEREPO} install pmetapost hiraprop
-    tlmgr --repository ${LINUX_TLPTEXLIVEREPO} update --all
+# for tltexjp repository
+if [ ${LINUX_ENABLE_TLTEXJP} -eq 1 ]; then
+    tlmgr --repository ${LINUX_TLTEXJP} install hiraprop
+    tlmgr --repository ${LINUX_TLTEXJP} update --all
     mkdir -p ${LINUX_TEXMFLOCAL}/tlpkg
     cat<<EOF>${LINUX_TEXMFLOCAL}/tlpkg/pinning.txt
-tlptexlive:*
+tltexjp:*
 EOF
-    tlmgr repository add http://www.tug.org/~preining/tlptexlive/ tlptexlive
+    tlmgr repository add http://texlive.texjp.org/current/tltexjp/ tltexjp
 fi
 
 # patching texmf.cnf
 echo "shell_escape_commands = bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,kpsewhich,makeindex,mendex,upmendex,texindy,repstopdf,epspdf,extractbb" >> ${LINUX_TEXDIR}/texmf.cnf
 
 # setup Japanese pLaTeX2e typesetting environment
+CJKGSINTG_OPTS="--link-texmf --force"
+[ ! -z ${LINUX_GSRESOURCEDIR} ] && \
+    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} -o ${LINUX_GSRESOURCEDIR}"
+${LINUX_TEXDIR}/bin/${LINUX_TLARCH}/cjk-gs-integrate ${CJKGSINTG_OPTS}
+
 ${LINUX_TEXDIR}/bin/${LINUX_TLARCH}/kanji-config-updmap-sys ${LINUX_kanjiEmbed}
 
 echo Happy TeXing!

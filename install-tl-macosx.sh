@@ -15,6 +15,9 @@ DARWIN_PROFILE=${PROFILE:-default}
 . ${DARWIN_PROFILE_D}/${DARWIN_PROFILE}.conf || exit 1
 
 
+# given the Resource directory of Ghostscript if any
+DARWIN_GSRESOURCEDIR=${GSRESOURCEDIR:-}
+
 # check the existence of install-tl
 if [ ! -f ${DARWIN_INSTALL_TL} ]; then
     echo E: No such install-tl: ${DARWIN_INSTALL_TL}
@@ -28,11 +31,11 @@ if [ -d ${DARWIN_TEXDIR}/tlpkg -o -d ${DARWIN_TEXDIR} ]; then
     exit 1
 fi
 
-# check DARWIN_ENABLE_TLPTEXLIVE and DARWIN_ENABLE_TLBIBUN
-case "${DARWIN_ENABLE_TLPTEXLIVE},${DARWIN_ENABLE_TLBIBUN}" in
+# check DARWIN_ENABLE_TLTEXJP and DARWIN_ENABLE_TLBIBUN
+case "${DARWIN_ENABLE_TLTEXJP},${DARWIN_ENABLE_TLBIBUN}" in
     [01],[01]) ;;
     *)
-        echo E: unknown strings: "${DARWIN_ENABLE_TLPTEXLIVE},${DARWIN_ENABLE_TLBIBUN}"
+        echo E: unknown strings: "${DARWIN_ENABLE_TLTEXJP},${DARWIN_ENABLE_TLBIBUN}"
         exit 1
         ;;
 esac
@@ -59,13 +62,9 @@ case ${DARWIN_OSXVERSION} in
     10.6|10.6.*)
         DARWIN_TLARCH=universal-darwin
         ;;
-    10.[789]|10.[789].*|10.1[01]|10.1[01].*)
-        DARWIN_TLARCH=x86_64-darwin
-        ;;
     *)
+        # 10.7 or higher version
         DARWIN_TLARCH=x86_64-darwin
-        echo W: not supported: ${DARWIN_OSXVERSION}
-        echo We will attempt to install ${DARWIN_TLARCH}
         ;;
 esac
 
@@ -80,8 +79,8 @@ DARWIN_SUDO_USER:		${DARWIN_SUDO_USER}
 base profile:			${DARWIN_PROFILE_D}/${DARWIN_PROFILE}.conf
 DARWIN_TLVERSION:		${DARWIN_TLVERSION}
 DARWIN_TLREPO:			${DARWIN_TLREPO}
-DARWIN_TLPTEXLIVEREPO:		${DARWIN_TLPTEXLIVEREPO}
-DARWIN_ENABLE_TLPTEXLIVE:	${DARWIN_ENABLE_TLPTEXLIVE}
+DARWIN_TLTEXJP:		${DARWIN_TLTEXJP}
+DARWIN_ENABLE_TLTEXJP:	${DARWIN_ENABLE_TLTEXJP}
 DARWIN_ENABLE_TLBIBUN:		${DARWIN_ENABLE_TLBIBUN}
 DARWIN_kanjiEmbed:		${DARWIN_kanjiEmbed}
 DARWIN_INSTALL_TL:		${DARWIN_INSTALL_TL}
@@ -145,15 +144,15 @@ $__install_tl -profile ${DARWIN_TEXDIR}/tlpkg/texlive.profile
 #     tlmgr --repository ${DARWIN_TLREPO} install hiraprop
 # fi
 
-# for tlptexlive repository
-if [ ${DARWIN_ENABLE_TLPTEXLIVE} -eq 1 ]; then
-    tlmgr --repository ${DARWIN_TLPTEXLIVEREPO} install pmetapost hiraprop
-    tlmgr --repository ${DARWIN_TLPTEXLIVEREPO} update --all
+# for tltexjp repository
+if [ ${DARWIN_ENABLE_TLTEXJP} -eq 1 ]; then
+    tlmgr --repository ${DARWIN_TLTEXJP} install hiraprop
+    tlmgr --repository ${DARWIN_TLTEXJP} update --all
     mkdir -p ${DARWIN_TEXMFLOCAL}/tlpkg
     cat<<EOF>${DARWIN_TEXMFLOCAL}/tlpkg/pinning.txt
-tlptexlive:*
+tltexjp:*
 EOF
-    tlmgr repository add http://www.tug.org/~preining/tlptexlive/ tlptexlive
+    tlmgr repository add http://texlive.texjp.org/current/tltexjp/ tltexjp
 fi
 
 # set default font folders in Mac OS X
@@ -163,44 +162,11 @@ echo "OSFONTDIR = /System/Library/Fonts//;/Library/Fonts//;~/Library/Fonts//" >>
 echo "shell_escape_commands = bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,kpsewhich,makeindex,mendex,upmendex,texindy,repstopdf,epspdf,extractbb" >> ${DARWIN_TEXDIR}/texmf.cnf
 
 # setup Japanese pLaTeX2e typesetting environment
-mkdir -p ${DARWIN_TEXMFLOCAL}/fonts/opentype/screen/hiragino
-(cd ${DARWIN_TEXMFLOCAL}/fonts/opentype/screen/hiragino
-    [ -f "/Library/Fonts/ヒラギノ明朝 Pro W3.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ明朝 Pro W3.otf" HiraMinPro-W3.otf
-    [ -f "/Library/Fonts/ヒラギノ明朝 Pro W6.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ明朝 Pro W6.otf" HiraMinPro-W6.otf
-    [ -f "/Library/Fonts/ヒラギノ丸ゴ Pro W4.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ丸ゴ Pro W4.otf" HiraMaruPro-W4.otf
-    [ -f "/Library/Fonts/ヒラギノ角ゴ Pro W3.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ角ゴ Pro W3.otf" HiraKakuPro-W3.otf
-    [ -f "/Library/Fonts/ヒラギノ角ゴ Pro W6.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ角ゴ Pro W6.otf" HiraKakuPro-W6.otf
-    [ -f "/Library/Fonts/ヒラギノ角ゴ Std W8.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ角ゴ Std W8.otf" HiraKakuStd-W8.otf
-    [ -f "/System/Library/Fonts/ヒラギノ明朝 ProN W3.otf" ] && \
-        ln -s "/System/Library/Fonts/ヒラギノ明朝 ProN W3.otf" HiraMinProN-W3.otf
-    [ -f "/System/Library/Fonts/ヒラギノ明朝 ProN W6.otf" ] && \
-        ln -s "/System/Library/Fonts/ヒラギノ明朝 ProN W6.otf" HiraMinProN-W6.otf
-    [ -f "/Library/Fonts/ヒラギノ丸ゴ ProN W4.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ丸ゴ ProN W4.otf" HiraMaruProN-W4.otf
-    [ -f "/System/Library/Fonts/ヒラギノ角ゴ ProN W3.otf" ] && \
-        ln -s "/System/Library/Fonts/ヒラギノ角ゴ ProN W3.otf" HiraKakuProN-W3.otf
-    [ -f "/System/Library/Fonts/ヒラギノ角ゴ ProN W6.otf" ] && \
-        ln -s "/System/Library/Fonts/ヒラギノ角ゴ ProN W6.otf" HiraKakuProN-W6.otf
-    [ -f "/Library/Fonts/ヒラギノ角ゴ StdN W8.otf" ] && \
-        ln -s "/Library/Fonts/ヒラギノ角ゴ StdN W8.otf" HiraKakuStdN-W8.otf
-)
-mkdir -p ${DARWIN_TEXMFLOCAL}/fonts/opentype/jiyukobo/yu
-(cd ${DARWIN_TEXMFLOCAL}/fonts/opentype/jiyukobo/yu
-    [ -f "/Library/Fonts/Yu Mincho Medium.otf" ] && \
-        ln -s "/Library/Fonts/Yu Mincho Medium.otf" YuMin-Medium.otf
-    [ -f "/Library/Fonts/Yu Mincho Demibold.otf" ] && \
-        ln -s "/Library/Fonts/Yu Mincho Demibold.otf" YuMin-Demibold.otf
-    [ -f "/Library/Fonts/Yu Gothic Medium.otf" ] && \
-        ln -s "/Library/Fonts/Yu Gothic Medium.otf" YuGo-Medium.otf
-    [ -f "/Library/Fonts/Yu Gothic Bold.otf" ] && \
-        ln -s "/Library/Fonts/Yu Gothic Bold.otf" YuGo-Bold.otf
-)
+CJKGSINTG_OPTS="--link-texmf --force"
+[ ! -z ${DARWIN_GSRESOURCEDIR} ] && \
+    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} -o ${DARWIN_GSRESOURCEDIR}"
+${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/cjk-gs-integrate ${CJKGSINTG_OPTS}
+
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/mktexlsr ${DARWIN_TEXMFLOCAL}
 ${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/kanji-config-updmap-sys ${DARWIN_kanjiEmbed}
 
