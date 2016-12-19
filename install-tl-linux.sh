@@ -154,7 +154,7 @@ if [ -z ${LINUX_GSRESOURCEDIR} ]; then
 else
     CJKGSINTG_OPTS="${CJKGSINTG_OPTS} --output ${LINUX_GSRESOURCEDIR}"
 fi
-${LINUX_TEXDIR}/bin/${LINUX_TLARCH}/cjk-gs-integrate ${CJKGSINTG_OPTS}
+perl ${LINUX_DESTDIR}/cjk-gs-integrate ${CJKGSINTG_OPTS}
 rm -rf ${CJKGSINTG_TEMPDIR}
 
 ${LINUX_TEXDIR}/bin/${LINUX_TLARCH}/kanji-config-updmap-sys ${LINUX_kanjiEmbed}
