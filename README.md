@@ -18,15 +18,3 @@ $ sudo ./install-tl-macosx.sh
 ```
 $ sudo PROFILE=texlive ./install-tl-macosx.sh
 ```
-
-### 例：ローカルな tlnet とローカルな tlptexlive を指定し、tlptexliveを有効にしたインストール
-
-```
-$ sudo PROFILE=texlive TLTEXJP=/var/local/tlptexlive TLREPO=/var/local/tlnet TEXLIVE_INSTALL_PREFIX=/opt/texlive ./install-tl-macosx.sh
-```
-
-### 例：GhostscriptのResourceディレクトリを与えたインストール
-
-```
-$ sudo GSRESOURCEDIR=/opt/mactexaddons/share/ghostscript/9.20/Resources ./install-tl-macosx.sh
-```
