@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2013 Munehiro Yamamoto (a.k.a. munepi)
-# <munepi@greencherry.jp, munepi@vinelinux.org>
+# Copyright (c) 2013-2020 Munehiro Yamamoto (a.k.a. munepi)
 #
 # It may be distributed and/or modified under the MIT License.
 
@@ -23,22 +22,13 @@ if [ ! -f ${DARWIN_INSTALL_TL} ]; then
     echo E: No such install-tl: ${DARWIN_INSTALL_TL}
     exit 1
 fi
-__install_tl="perl ${DARWIN_INSTALL_TL} -repository ${DARWIN_TLREPO}"
+__install_tl="perl ${DARWIN_INSTALL_TL} --no-gui --repository ${DARWIN_TLREPO}"
 
 # check the same TeX Live environment
 if [ -d ${DARWIN_TEXDIR}/tlpkg -o -d ${DARWIN_TEXDIR} ]; then
     echo E: already installed TeX Live ${DARWIN_TLVERSION}: ${DARWIN_TLROOT}
     exit 1
 fi
-
-# check DARWIN_ENABLE_TLTEXJP and DARWIN_ENABLE_TLBIBUN
-case "${DARWIN_ENABLE_TLTEXJP},${DARWIN_ENABLE_TLBIBUN}" in
-    [01],[01]) ;;
-    *)
-        echo E: unknown strings: "${DARWIN_ENABLE_TLTEXJP},${DARWIN_ENABLE_TLBIBUN}"
-        exit 1
-        ;;
-esac
 
 
 # check whether DARWIN_TLREPO is a local tlnet repository or not
@@ -48,29 +38,25 @@ fi
 
 
 # choice your platform
-DARWIN_OSXVERSION=$(sw_vers -productVersion)
+OSXVERSION=${OSXVERSION:-$(sw_vers -productVersion)}
+OSXVERSION=$(echo ${OSXVERSION} | awk -F. '{ OFS=FS; print $1, $2 }') # replace: 10.X.Y -> 10.X
 case ${DARWIN_OSXVERSION} in
-    10.[012345]|10.[012345].*)
+    10.[012345])
         echo E: not supported: ${DARWIN_OSXVERSION}
         exit 1
         ;;
-    10.6|10.6.*)
-        DARWIN_TLARCH=i386-darwin
-        echo W: not supported: ${DARWIN_OSXVERSION}
-        echo We will attempt to install ${DARWIN_TLARCH}
-        ;;
-    10.[789]|10.[789].*)
+    10.[6789]|10.1[12])
         DARWIN_TLARCH=x86_64-darwinlegacy
         echo W: not supported: ${DARWIN_OSXVERSION}
         echo We will attempt to install ${DARWIN_TLARCH}
         ;;
     *)
-        # 10.10 or higher version
+        # 10.13 or higher version
         DARWIN_TLARCH=x86_64-darwin
         ;;
 esac
 
-# forcely set $PATH when installing TeX Live ${DARWIN_TLVERSION} and modifying 
+# forcely set $PATH when installing TeX Live ${DARWIN_TLVERSION} and modifying
 # your TeX environment
 export PATH=${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}:/usr/bin:/bin:/usr/sbin:/sbin
 
@@ -81,10 +67,6 @@ DARWIN_SUDO_USER:		${DARWIN_SUDO_USER}
 base profile:			${DARWIN_PROFILE_D}/${DARWIN_PROFILE}.conf
 DARWIN_TLVERSION:		${DARWIN_TLVERSION}
 DARWIN_TLREPO:			${DARWIN_TLREPO}
-DARWIN_TLTEXJP:		${DARWIN_TLTEXJP}
-DARWIN_ENABLE_TLTEXJP:	${DARWIN_ENABLE_TLTEXJP}
-DARWIN_ENABLE_TLBIBUN:		${DARWIN_ENABLE_TLBIBUN}
-DARWIN_kanjiEmbed:		${DARWIN_kanjiEmbed}
 DARWIN_INSTALL_TL:		${DARWIN_INSTALL_TL}
 DARWIN_TLROOT:			${DARWIN_TLROOT}
 DARWIN_TEXDIR:			${DARWIN_TEXDIR}
@@ -140,44 +122,7 @@ EOF
 # gooooo!
 $__install_tl -profile ${DARWIN_TEXDIR}/tlpkg/texlive.profile
 
-# collection-langcjk: depend hiraprop
-# # for LaTeX2e Bibunsho 6th Edition
-# if [ ${DARWIN_ENABLE_TLBIBUN} -eq 1 ]; then
-#     tlmgr --repository ${DARWIN_TLREPO} install hiraprop
-# fi
-
-# for tltexjp repository
-if [ ${DARWIN_ENABLE_TLTEXJP} -eq 1 ]; then
-    tlmgr --repository ${DARWIN_TLTEXJP} install hiraprop
-    tlmgr --repository ${DARWIN_TLTEXJP} update --all
-    mkdir -p ${DARWIN_TEXMFLOCAL}/tlpkg
-    cat<<EOF>${DARWIN_TEXMFLOCAL}/tlpkg/pinning.txt
-tltexjp:*
-EOF
-    tlmgr repository add http://texlive.texjp.org/current/tltexjp/ tltexjp
-fi
-
-# set default font folders in Mac OS X
-echo "OSFONTDIR = /System/Library/Fonts//;/Library/Fonts//;~/Library/Fonts//" >> ${DARWIN_TEXDIR}/texmf.cnf
-
-# patching texmf.cnf
-echo "shell_escape_commands = bibtex,bibtex8,bibtexu,pbibtex,upbibtex,biber,kpsewhich,makeindex,mendex,upmendex,texindy,repstopdf,epspdf,extractbb" >> ${DARWIN_TEXDIR}/texmf.cnf
-
-# setup Japanese pLaTeX2e typesetting environment
-CJKGSINTG_OPTS="--link-texmf --force"
-CJKGSINTG_TEMPDIR=$(mktemp -d)
-if [ -z ${DARWIN_GSRESOURCEDIR} ]; then
-    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} --output ${CJKGSINTG_TEMPDIR}"
-else
-    CJKGSINTG_OPTS="${CJKGSINTG_OPTS} --output ${DARWIN_GSRESOURCEDIR}"
-fi
-perl ${DARWIN_DESTDIR}/cjk-gs-integrate.pl ${CJKGSINTG_OPTS}
-rm -rf ${CJKGSINTG_TEMPDIR}
-
-${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/mktexlsr ${DARWIN_TEXMFLOCAL}
-${DARWIN_TEXDIR}/bin/${DARWIN_TLARCH}/kanji-config-updmap-sys ${DARWIN_kanjiEmbed}
-
-# change permissions of DARWIN_TEXMFLOCAL, DARWIN_TEXMFSYSCONFIG, and 
+# change permissions of DARWIN_TEXMFLOCAL, DARWIN_TEXMFSYSCONFIG, and
 # DARWIN_TEXMFSYSVAR under /Users/Shared/TeXLive
 echo ${DARWIN_TEXMFLOCAL} | grep -q "/Users/Shared/TeXLive"
 if [ $? -eq 0 ]; then
