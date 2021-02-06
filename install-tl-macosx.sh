@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2013-2020 Munehiro Yamamoto (a.k.a. munepi)
+# Copyright (c) 2013-2021 Munehiro Yamamoto (a.k.a. munepi)
 #
 # It may be distributed and/or modified under the MIT License.
 
@@ -38,8 +38,8 @@ fi
 
 
 # choice your platform
-OSXVERSION=${OSXVERSION:-$(sw_vers -productVersion)}
-OSXVERSION=$(echo ${OSXVERSION} | awk -F. '{ OFS=FS; print $1, $2 }') # replace: 10.X.Y -> 10.X
+DARWIN_OSXVERSION=$(sw_vers -productVersion)
+DARWIN_OSXVERSION=$(echo ${DARWIN_OSXVERSION} | awk -F. '{ OFS=FS; print $1, $2 }') # replace: 10.X.Y -> 10.X
 case ${DARWIN_OSXVERSION} in
     10.[012345])
         echo E: not supported: ${DARWIN_OSXVERSION}
