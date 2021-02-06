@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2013-2020 Munehiro Yamamoto (a.k.a. munepi)
+# Copyright (c) 2013-2021 Munehiro Yamamoto (a.k.a. munepi)
 #
 # It may be distributed and/or modified under the MIT License.
 
